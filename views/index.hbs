@@ -1,0 +1,140 @@
+ <div id="mapid"></div>
+<div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist" id = 'main-list'>
+            	<!--THIS AREA SHOULD BE LOOPED AS A TRIPLE BRACKET THING CAUSE WE NEED TO GET DATA FROM DB -->
+            	<li>SOME TEXT</li>
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i>&nbsp;&nbsp;ASDF</a></li>
+                <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
+                <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
+                <li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
+             
+
+            </ul>
+
+            <ul role="tablist">
+                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                    sidebar-v2
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+
+                <p>A responsive sidebar for mapping libraries like <a href="http://leafletjs.com/">Leaflet</a> or <a href="http://openlayers.org/">OpenLayers</a>.</p>
+
+                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+
+                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+
+                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+
+                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+            </div>
+
+            <div class="sidebar-pane" id="profile">
+                <h1 class="sidebar-header">Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="messages">
+                <h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+
+            <div class="sidebar-pane" id="settings">
+                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+        </div>
+    </div>
+ <script>
+ var map = L.map('mapid').setView([51.505, -0.09], 3);
+  var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+	maxZoom: 16,
+	minZoom: 2,
+	unloadInvisibleTiles : false,
+    reuseTiles : true,
+    updateWhenIdle : false,
+    continousWorld : false,
+    noWrap: false,
+ 
+  }).addTo(map);
+  //map.worldCopyJump = true;
+  map.bounds = [], map.setMaxBounds([[-85.05115, -180],[85,180]]);
+
+
+/*var Esri_NatGeoWorldMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
+	maxZoom: 16
+});
+  var fg = L.tileLayer.mask('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
+ 
+  maskSize : 500  //optional
+}).addTo(map);
+
+  // Add event handler to update mask position
+map.on("mousemove", function(e) {
+ fg.setCenter(e.containerPoint);
+});*/
+
+function countriesStyle(feature){
+	//console.log(map.getZoom());
+	//SEND A GET REQUEST TO GET COLOR INFORMATION FROM MONGODB
+
+	var params = {
+
+			weight: 1,
+			opacity: 0,
+			color: 'white',
+			dashArray: 3,
+
+		};
+	
+	if(feature.properties.ADMIN == "Germany"){
+		params.fillColor = 'red',
+		params.fillOpacity = 0.4
+	}
+	return params;
+	
+}
+
+function checkZoom(){
+	if(map.getZoom() > 5 && currentZoom <= 5){
+		currentZoom = map.getZoom();
+		$('#main-list').children().each(function(){
+			$(this).hide('slow', function(){this.remove();})
+			//this.remove();
+			//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
+		}).promise().done(function(){
+			$('#main-list').hide();
+			$('<li>NEW TEXT</li><li><a href="#home" role="tab"><i class="fa fa-facebook"></i>&nbsp;&nbsp;ASDF</a></li><li><a href="#profile" role="tab"><i class="fa fa-instagram"></i></a></li><li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li><li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>').appendTo("#main-list");
+			$('#main-list').fadeIn(2000);
+			
+		});
+	}
+	if(map.getZoom() <= 5 && currentZoom > 5){
+		currentZoom = map.getZoom();
+		$('#main-list').children().each(function(){
+			$(this).hide('slow', function(){this.remove();})
+			//this.remove();
+		}).promise().done(function(){
+			$('#main-list').hide();
+			$('<li>SOME TEXT</li><li><a href="#home" role="tab"><i class="fa fa-bars"></i>&nbsp;&nbsp;ASDF</a></li><li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li><li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li><li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>').appendTo("#main-list");
+			$('#main-list').fadeIn(2000);
+			
+		});
+
+		//SEND REQUEST TO GET DATA FROM MONGO
+		
+		
+	}
+}
+var currentZoom = map.getZoom();
+var countriesLayer = L.geoJson(countries, {style: countriesStyle}).addTo(map);
+map.on('zoom', checkZoom);
+var sidebar = $('#sidebar').sidebar();
+ </script>
