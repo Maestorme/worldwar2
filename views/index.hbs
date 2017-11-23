@@ -103,7 +103,12 @@ function countriesStyle(feature){
 }
 
 function checkZoom(){
+	var resultArr = [];
 	if(map.getZoom() > 5 && currentZoom <= 5){
+		$.get('/zoom/spots', function(result){
+			console.log(result);
+		});
+		//console.log(resultArr);
 		currentZoom = map.getZoom();
 		$('#main-list').children().each(function(){
 			$(this).hide('slow', function(){this.remove();})
@@ -112,11 +117,15 @@ function checkZoom(){
 		}).promise().done(function(){
 			$('#main-list').hide();
 			$('<li>NEW TEXT</li><li><a href="#home" role="tab"><i class="fa fa-facebook"></i>&nbsp;&nbsp;ASDF</a></li><li><a href="#profile" role="tab"><i class="fa fa-instagram"></i></a></li><li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li><li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>').appendTo("#main-list");
-			$('#main-list').fadeIn(2000);
+			$('#main-list').fadeIn(600);
 			
 		});
 	}
 	if(map.getZoom() <= 5 && currentZoom > 5){
+		$.get('/zoom/events', function(result){
+			console.log(result);
+		});
+		//console.log(resultArr);
 		currentZoom = map.getZoom();
 		$('#main-list').children().each(function(){
 			$(this).hide('slow', function(){this.remove();})
@@ -124,7 +133,7 @@ function checkZoom(){
 		}).promise().done(function(){
 			$('#main-list').hide();
 			$('<li>SOME TEXT</li><li><a href="#home" role="tab"><i class="fa fa-bars"></i>&nbsp;&nbsp;ASDF</a></li><li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li><li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li><li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>').appendTo("#main-list");
-			$('#main-list').fadeIn(2000);
+			$('#main-list').fadeIn(600);
 			
 		});
 
