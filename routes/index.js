@@ -9,14 +9,42 @@ var menu = [];
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  menu.splice(0, menu.length);
+
+  mongo.connect(url, function(err, db){
+			if(err){
+				res.send('Database failed to open');
+			}
+
+			var cursor = db.collection('data').find({type: 'events'});
+
+			cursor.forEach(function(doc, err){
+				
+  				if(err){
+  					db.close();
+  					res.send('Failed to get data');
+  				}
+  				
+  				menu.push(doc.values);
+  		}, function(){
+  			db.close();
+  			
+  			for(var i = 0; i < menu.length; i++){
+
+  				menu[i].path = '#'+(menu[i].name).replace(/\s+/g, '');
+  				menu[i].hashid = menu[i].name.replace(/\s+/g, '');
+  			}
+  			res.render('index', { title: 'Express' , items: menu});
+  		});
+
+  });
+//res.render('index', { title: 'Express'});
+ 
 });
 
 router.get('/zoom/:type', function(req, res, next){
 	menu.splice(0, menu.length);
-	//console.log(req);
-	console.log("Hello dude");
-	console.log(req.params.type);
+
 
 	var toFind = req.params.type; //FIND WHAT THIS IS!
 

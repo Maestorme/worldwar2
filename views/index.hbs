@@ -1,14 +1,13 @@
- <div id="mapid"></div>
+<div id="mapid"></div>
 <div id="sidebar" class="sidebar collapsed">
         <!-- Nav tabs -->
         <div class="sidebar-tabs">
             <ul role="tablist" id = 'main-list'>
-            	<!--THIS AREA SHOULD BE LOOPED AS A TRIPLE BRACKET THING CAUSE WE NEED TO GET DATA FROM DB -->
-            	<li>SOME TEXT</li>
-                <li><a href="#home" role="tab"><i class="fa fa-bars"></i>&nbsp;&nbsp;ASDF</a></li>
-                <li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li>
-                <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li>
-                <li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>
+
+                <li>Main Events</li>
+                {{#each items}}
+                	<li><a href={{this.path}} role='tab'><i class = "fa fa-bars"></i>&nbsp;&nbsp;{{this.name}} - {{this.country}}</a></li>
+                {{/each}}
              
 
             </ul>
@@ -19,38 +18,21 @@
         </div>
 
         <!-- Tab panes -->
-        <div class="sidebar-content">
-            <div class="sidebar-pane" id="home">
-                <h1 class="sidebar-header">
-                    sidebar-v2
-                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
-                </h1>
-
-                <p>A responsive sidebar for mapping libraries like <a href="http://leafletjs.com/">Leaflet</a> or <a href="http://openlayers.org/">OpenLayers</a>.</p>
-
-                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-
-                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-
-                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-
-                <p class="lorem">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
-            </div>
-
-            <div class="sidebar-pane" id="profile">
-                <h1 class="sidebar-header">Profile<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-            </div>
-
-            <div class="sidebar-pane" id="messages">
-                <h1 class="sidebar-header">Messages<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-            </div>
-
-            <div class="sidebar-pane" id="settings">
-                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-            </div>
+        
+        <div class="sidebar-content" id='main-info'>
+        	{{#each items}}
+            	<div class="sidebar-pane" id={{this.hashid}}>
+                	<h1 class="sidebar-header">
+                    	{{this.name}}
+                    	<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                	</h1>
+                	<p>{{this.desc}}</p>
+            	</div>
+            {{/each}}
         </div>
-    </div>
+ </div>
  <script>
+ var time = 1939;
  var map = L.map('mapid').setView([51.505, -0.09], 3);
   var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
 	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
@@ -80,70 +62,147 @@
 map.on("mousemove", function(e) {
  fg.setCenter(e.containerPoint);
 });*/
+var countryShades = {
+  y1939: {Axis: ['Germany', 'Luxembourg', 'Poland', 'Austria', 'Slovakia', 'Czech Republic'], USSR: ['Armenia', 'Azerbaijan', 'Belarus', 'Estonia', 'Georgia', 'Kazakhstan', 'Kyrgyzstan', 'Latvia', 'Lithuania', 'Moldova', 'Russia', 'Tajikistan', 'Turkmenistan', 'Ukraine', 'Uzbekistan'], Allies: ['United States of America', 'United Kingdom', 'France', 'Australia', 'India', 'Pakistan', 'New Zealand', 'Nepal', 'Tonga', 'South Africa', 'Canada', 'Egypt', 'Sri Lanka', 'Myanmar', 'Vietnam', 'Hong Kong', 'Singapore', 'Sudan', 'Nigeria', 'South Africa', 'Rhodesia', 'Northern Rhodesia', 'Bechuanaland', 'Nyasaland', 'Tanganyika', 'Kenya', 'Uganda', 'Mali', 'Mauritania', 'Algeria', 'Morocco', 'Liberia', 'Guinea', 'Senegal'] },
+  y1940: {Axis: ['Algeria', 'Libya', 'Mauritiana', 'Senegal', 'Guinea', 'Mali', 'Burkina Faso', 'Togo', 'Benin', 'Niger', 'Ethiopia', 'Somalia', 'Eritrea', 'Madagascar', , 'Italy', 'Germany', 'Tunisia', 'Morocco', 'Luxembourg', 'Poland', 'Austria', 'Slovakia', 'Czech Republic', 'Syria', 'France', 'Netherlands', 'Belgium', 'Hungary', 'Romania', 'Norway'], USSR: ['Armenia', 'Azerbaijan', 'Belarus', 'Estonia', 'Georgia', 'Kazakhstan', 'Kyrgyzstan', 'Latvia', 'Lithuania', 'Moldova', 'Russia', 'Tajikistan', 'Turkmenistan', 'Ukraine', 'Uzbekistan'], Allies: ['Jordan', 'Israel', 'Lebanon', 'United States of America', 'United Kingdom', 'France', 'Australia', 'India', 'Pakistan', 'New Zealand', 'Nepal', 'Tonga', 'South Africa', 'Canada', 'Egypt', 'Sri Lanka', 'Myanmar', 'Vietnam', 'Hong Kong', 'Singapore', 'Sudan', 'Nigeria', 'South Africa', 'Rhodesia', 'Northern Rhodesia', 'Bechuanaland', 'Nyasaland', 'Tanganyika', 'Kenya', 'Uganda', 'Mali', 'Mauritania', 'Algeria', 'Liberia', 'Guinea', 'Senegal', 'Malaysia', 'Indonesia', 'Papua New Guinea', 'Solomon Islands', 'Greece', 'Ghana', 'United Arab Emirates', 'Oman', 'Yemen'] },
+  y1941: {},
+  y1942: {},
+};
 
 function countriesStyle(feature){
 	//console.log(map.getZoom());
 	//SEND A GET REQUEST TO GET COLOR INFORMATION FROM MONGODB
-
+	//Send request with a parameter as time to get a document with the list of countries that in each section
+	//foreach 1939, if indexof(country) >= 0 do something
 	var params = {
-
 			weight: 1,
 			opacity: 0,
 			color: 'white',
 			dashArray: 3,
 
-		};
+	};
 	
-	if(feature.properties.ADMIN == "Germany"){
-		params.fillColor = 'red',
-		params.fillOpacity = 0.4
+	//console.log(countryShades.y1939.Axis, time);
+	if(time == 1939){
+		if(countryShades.y1939.Axis.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'red';
+			params.fillOpacity = 0.4;
+		}
+		else if(countryShades.y1939.USSR.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'green';
+			params.fillOpacity = 0.4;
+		}
+		else if(countryShades.y1939.Allies.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'blue';
+			params.fillOpacity = 0.4;
+		}
+	}
+
+	else if(time == 1940){
+		if(countryShades.y1940.Axis.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'red';
+			params.fillOpacity = 0.4;
+		}
+		else if(countryShades.y1940.USSR.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'green';
+			params.fillOpacity = 0.4;
+		}
+		else if(countryShades.y1940.Allies.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'blue';
+			params.fillOpacity = 0.4;
+		}
 	}
 	return params;
 	
 }
 
 function checkZoom(){
-	var resultArr = [];
 	if(map.getZoom() > 5 && currentZoom <= 5){
 		$.get('/zoom/spots', function(result){
-			console.log(result);
-		});
-		//console.log(resultArr);
-		currentZoom = map.getZoom();
-		$('#main-list').children().each(function(){
-			$(this).hide('slow', function(){this.remove();})
-			//this.remove();
-			//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
-		}).promise().done(function(){
-			$('#main-list').hide();
-			$('<li>NEW TEXT</li><li><a href="#home" role="tab"><i class="fa fa-facebook"></i>&nbsp;&nbsp;ASDF</a></li><li><a href="#profile" role="tab"><i class="fa fa-instagram"></i></a></li><li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li><li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>').appendTo("#main-list");
-			$('#main-list').fadeIn(600);
 			
+			currentZoom = map.getZoom();
+			$('#main-list').children().each(function(){
+				$(this).hide('slow', function(){this.remove();})
+				//this.remove();
+				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
+			}).promise().done(function(){
+				$('#main-list').hide();
+				var string = "<li>Spots of Interest</li>";
+				for(var i = 0; i < result.length; i++){
+					string += "<li><a href='#' role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - "+result[i].country+"</a></li>";
+				}
+				$(string).appendTo("#main-list");
+				$('#main-list').fadeIn(600);
+			
+			});
 		});
+		
 	}
 	if(map.getZoom() <= 5 && currentZoom > 5){
 		$.get('/zoom/events', function(result){
-			console.log(result);
-		});
-		//console.log(resultArr);
-		currentZoom = map.getZoom();
-		$('#main-list').children().each(function(){
-			$(this).hide('slow', function(){this.remove();})
+			currentZoom = map.getZoom();
+			$('#main-list').children().each(function(){
+				$(this).hide('slow', function(){this.remove();})
 			//this.remove();
-		}).promise().done(function(){
-			$('#main-list').hide();
-			$('<li>SOME TEXT</li><li><a href="#home" role="tab"><i class="fa fa-bars"></i>&nbsp;&nbsp;ASDF</a></li><li><a href="#profile" role="tab"><i class="fa fa-user"></i></a></li><li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li><li><a href="https://github.com/Turbo87/sidebar-v2" role="tab" target="_blank"><i class="fa fa-github"></i></a></li>').appendTo("#main-list");
-			$('#main-list').fadeIn(600);
-			
+			}).promise().done(function(){
+				$('#main-list').hide();
+				var string = "<li>Main Events</li>";
+				for(var i = 0; i < result.length; i++){
+					string += "<li><a href='#"+(result[i].name).replace(/\s+/g, '')+"' role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - \n"+result[i].country+"</a></li>";
+				}
+				$(string).appendTo("#main-list");
+				$('#main-list').fadeIn(600);
+			});
 		});
-
-		//SEND REQUEST TO GET DATA FROM MONGO
-		
-		
 	}
 }
 var currentZoom = map.getZoom();
 var countriesLayer = L.geoJson(countries, {style: countriesStyle}).addTo(map);
+
+/*var sliderControl = L.control.sliderControl({position: "topright", layer: countriesLayer});
+
+//Make sure to add the slider to the map ;-)
+map.addControl(sliderControl);
+
+//And initialize the slider
+sliderControl.startSlider();*/
+
+
+function slider(value){
+	//time = value;
+	console.log(time == '1940');
+	
+	if(time != value){
+		time = value;
+		countriesLayer.eachLayer(function(l) {
+			$(l._path).fadeOut(500); // 1000ms animation time
+		});
+
+		setTimeout(function() {
+  			map.removeLayer(countriesLayer);
+
+  			countriesLayer = L.geoJson(countries, {style: countriesStyle});//.addTo(map);
+  			map.addLayer(countriesLayer);
+  			countriesLayer.eachLayer(function(l) {
+				$(l._path).hide(); // 1000ms animation time
+				$(l._path).fadeIn(500);
+			});
+			
+  		}, 500);
+
+		
+
+	}
+	
+	//map.removeLayer(countriesLayer);
+	//countriesLayer = L.geoJson(countries, {style: countriesStyle}).addTo(map);
+	//Esri_WorldGrayCanvas.redraw();
+	
+}
+
+var slider = L.control.slider(slider, {id:slider, orientation: 'horizontal', syncSlider: true, collapsed: false, width: 800, min: 1939, max: 1945, value: 1939, getValue: function(value){return 'Year: '+value;}});
+slider.addTo(map);
 map.on('zoom', checkZoom);
 var sidebar = $('#sidebar').sidebar();
+
  </script>
