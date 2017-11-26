@@ -4,9 +4,9 @@
         <div class="sidebar-tabs">
             <ul role="tablist" id = 'main-list'>
 
-                <li>Main Events</li>
+                <li class='disabled title'>Main Events</li>
                 {{#each items}}
-                	<li><a href={{this.path}} role='tab'><i class = "fa fa-bars"></i>&nbsp;&nbsp;{{this.name}} - {{this.country}}</a></li>
+                	<li><a href={{this.path}} role='tab'><i class = "fa fa-facebook"></i>&nbsp;&nbsp;{{this.name}} - {{this.country}}</a></li>
                 {{/each}}
              
 
@@ -33,7 +33,9 @@
  </div>
  <script>
  var time = 1939;
- var map = L.map('mapid').setView([51.505, -0.09], 3);
+ var timeChanged = false;
+ 
+ var map = L.map('mapid', {zoomControl: false}).setView([51.505, -0.09], 3);
   var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
 	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
 	maxZoom: 16,
@@ -43,12 +45,24 @@
     updateWhenIdle : false,
     continousWorld : false,
     noWrap: false,
+
  
   }).addTo(map);
   //map.worldCopyJump = true;
+  L.control.zoom({position: 'bottomright'}).addTo(map);
   map.bounds = [], map.setMaxBounds([[-85.05115, -180],[85,180]]);
+var slider = L.control.slider(slider, {id:slider, orientation: 'horizontal', syncSlider: true, collapsed: false, width: 800, min: 1939, max: 1945, value: 1939, getValue: function(value){return 'Year: '+value;}});
+slider.addTo(map);
+map.on('zoom', checkZoom);
 
 
+var sidebar = $('#sidebar').sidebar();
+var markersLayer = L.featureGroup();
+
+markersLayer.on("click", function(e){
+	sidebar.open("WarshawGhetto");
+	
+});
 /*var Esri_NatGeoWorldMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
 	attribution: 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
 	maxZoom: 16
@@ -64,9 +78,9 @@ map.on("mousemove", function(e) {
 });*/
 var countryShades = {
   y1939: {Axis: ['Germany', 'Luxembourg', 'Poland', 'Austria', 'Slovakia', 'Czech Republic'], USSR: ['Armenia', 'Azerbaijan', 'Belarus', 'Estonia', 'Georgia', 'Kazakhstan', 'Kyrgyzstan', 'Latvia', 'Lithuania', 'Moldova', 'Russia', 'Tajikistan', 'Turkmenistan', 'Ukraine', 'Uzbekistan'], Allies: ['United States of America', 'United Kingdom', 'France', 'Australia', 'India', 'Pakistan', 'New Zealand', 'Nepal', 'Tonga', 'South Africa', 'Canada', 'Egypt', 'Sri Lanka', 'Myanmar', 'Vietnam', 'Hong Kong', 'Singapore', 'Sudan', 'Nigeria', 'South Africa', 'Rhodesia', 'Northern Rhodesia', 'Bechuanaland', 'Nyasaland', 'Tanganyika', 'Kenya', 'Uganda', 'Mali', 'Mauritania', 'Algeria', 'Morocco', 'Liberia', 'Guinea', 'Senegal'] },
-  y1940: {Axis: ['Algeria', 'Libya', 'Mauritiana', 'Senegal', 'Guinea', 'Mali', 'Burkina Faso', 'Togo', 'Benin', 'Niger', 'Ethiopia', 'Somalia', 'Eritrea', 'Madagascar', , 'Italy', 'Germany', 'Tunisia', 'Morocco', 'Luxembourg', 'Poland', 'Austria', 'Slovakia', 'Czech Republic', 'Syria', 'France', 'Netherlands', 'Belgium', 'Hungary', 'Romania', 'Norway'], USSR: ['Armenia', 'Azerbaijan', 'Belarus', 'Estonia', 'Georgia', 'Kazakhstan', 'Kyrgyzstan', 'Latvia', 'Lithuania', 'Moldova', 'Russia', 'Tajikistan', 'Turkmenistan', 'Ukraine', 'Uzbekistan'], Allies: ['Jordan', 'Israel', 'Lebanon', 'United States of America', 'United Kingdom', 'France', 'Australia', 'India', 'Pakistan', 'New Zealand', 'Nepal', 'Tonga', 'South Africa', 'Canada', 'Egypt', 'Sri Lanka', 'Myanmar', 'Vietnam', 'Hong Kong', 'Singapore', 'Sudan', 'Nigeria', 'South Africa', 'Rhodesia', 'Northern Rhodesia', 'Bechuanaland', 'Nyasaland', 'Tanganyika', 'Kenya', 'Uganda', 'Mali', 'Mauritania', 'Algeria', 'Liberia', 'Guinea', 'Senegal', 'Malaysia', 'Indonesia', 'Papua New Guinea', 'Solomon Islands', 'Greece', 'Ghana', 'United Arab Emirates', 'Oman', 'Yemen'] },
-  y1941: {},
-  y1942: {},
+  y1940: {Axis: ['Algeria', 'Libya', 'Mauritiana', 'Senegal', 'Guinea', 'Mali', 'Burkina Faso', 'Togo', 'Benin', 'Niger', 'Ethiopia', 'Somalia', 'Eritrea', 'Madagascar', , 'Italy', 'Germany', 'Tunisia', 'Morocco', 'Luxembourg', 'Poland', 'Austria', 'Slovakia', 'Czech Republic', 'Syria', 'France', 'Netherlands', 'Belgium', 'Hungary', 'Romania', 'Norway'], USSR: ['Armenia', 'Azerbaijan', 'Belarus', 'Estonia', 'Georgia', 'Kazakhstan', 'Kyrgyzstan', 'Latvia', 'Lithuania', 'Moldova', 'Russia', 'Tajikistan', 'Turkmenistan', 'Ukraine', 'Uzbekistan'], Allies: ['Jordan', 'Israel', 'Lebanon', 'United States of America', 'United Kingdom', 'France', 'Australia', 'India', 'Pakistan', 'New Zealand', 'Nepal', 'Tonga', 'South Africa', 'Canada', 'Egypt', 'Sri Lanka', 'Myanmar', 'Vietnam', 'Hong Kong', 'Singapore', 'Sudan', 'Nigeria', 'South Africa', 'Rhodesia', 'Northern Rhodesia', 'Bechuanaland', 'Nyasaland', 'Tanganyika', 'Kenya', 'Uganda', 'Mali', 'Mauritania', 'Algeria', 'Liberia', 'Guinea', 'Senegal', 'Malaysia', 'Indonesia', 'Papua New Guinea', 'Solomon Islands', 'Greece', 'Ghana', 'United Arab Emirates', 'Oman', 'Yemen', 'United Republic of Tanzania', 'Democratic Republic of the Congo', 'Zambia', 'Zimbabwe', 'Botswana', 'Namibia', 'Congo', 'Gabon', 'Chad', 'Cameroon', 'Central African Republic', 'South Sudan'] },
+  y1941: {Axis: ['Algeria', 'Libya', 'Mauritiana', 'Senegal', 'Guinea', 'Mali', 'Burkina Faso', 'Togo', 'Benin', 'Niger', 'Eritrea', 'Madagascar', , 'Italy', 'Germany', 'Tunisia', 'Morocco', 'Luxembourg', 'Poland', 'Austria', 'Slovakia', 'Czech Republic', 'Syria', 'France', 'Netherlands', 'Belgium', 'Hungary', 'Romania', 'Norway', 'North Korea', 'South Korea', 'Vietnam', 'Cambodia', 'Thailand', 'Laos', 'Taiwan', 'Japan', 'Mongolia', 'Philippines', 'Estonia', 'Latvia', 'Lithuania', 'Belarus', 'Ukraine', 'Moldova', 'Slovenia', 'Croatia', 'Bosnia and Herzegovina', 'Montenegro', 'Republic of Serbia', 'Albania', 'Bulgaria', 'Macedonia'], USSR: [], Allies: ['Jordan', 'Israel', 'Lebanon', 'United States of America', 'United Kingdom', 'France', 'Australia', 'India', 'Pakistan', 'New Zealand', 'Nepal', 'Tonga', 'South Africa', 'Canada', 'Egypt', 'Sri Lanka', 'Myanmar', 'Vietnam', 'Hong Kong', 'Singapore', 'Sudan', 'Nigeria', 'South Africa', 'Rhodesia', 'Northern Rhodesia', 'Bechuanaland', 'Nyasaland', 'Tanganyika', 'Kenya', 'Uganda', 'Mali', 'Mauritania', 'Algeria', 'Liberia', 'Guinea', 'Senegal', 'Malaysia', 'Indonesia', 'Papua New Guinea', 'Solomon Islands', 'Greece', 'Ghana', 'United Arab Emirates', 'Oman', 'Yemen', 'Ethiopia', 'Somalia', 'Djibouti', 'United Republic of Tanzania', 'Democratic Republic of the Congo', 'Zambia', 'Zimbabwe', 'Botswana', 'Namibia', 'Congo', 'Gabon', 'Chad', 'Cameroon', 'Central African Republic', 'South Sudan', 'Iraq', 'Iran', 'Armenia', 'Azerbaijan', 'Belarus', 'Estonia', 'Georgia', 'Kazakhstan', 'Kyrgyzstan', 'Latvia', 'Lithuania', 'Moldova', 'Russia', 'Tajikistan', 'Turkmenistan', 'Ukraine', 'Uzbekistan', 'Bangladesh'] },
+  y1942: {Axis: [], USSR: [], Allies: []},
 };
 
 function countriesStyle(feature){
@@ -82,7 +96,7 @@ function countriesStyle(feature){
 
 	};
 	
-	//console.log(countryShades.y1939.Axis, time);
+	
 	if(time == 1939){
 		if(countryShades.y1939.Axis.indexOf(feature.properties.ADMIN) >= 0){
 			params.fillColor = 'red';
@@ -112,33 +126,172 @@ function countriesStyle(feature){
 			params.fillOpacity = 0.4;
 		}
 	}
+
+	else if(time == 1941){
+		if(countryShades.y1941.Axis.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'red';
+			params.fillOpacity = 0.4;
+		}
+		else if(countryShades.y1941.USSR.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'green';
+			params.fillOpacity = 0.4;
+		}
+		else if(countryShades.y1941.Allies.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'blue';
+			params.fillOpacity = 0.4;
+		}
+	}
+
+	else if(time == 1942){
+		if(countryShades.y1942.Axis.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'red';
+			params.fillOpacity = 0.4;
+		}
+		else if(countryShades.y1942.USSR.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'green';
+			params.fillOpacity = 0.4;
+		}
+		else if(countryShades.y1942.Allies.indexOf(feature.properties.ADMIN) >= 0){
+			params.fillColor = 'blue';
+			params.fillOpacity = 0.4;
+		}
+	}
 	return params;
 	
 }
 
+function sliderChange(){
+	
+	if(map.getZoom() > 5){
+		markersLayer.clearLayers();
+		$.get('/zoom/spots', function(result){
+			$('#main-list').children().each(function(){
+				this.remove();
+			}).promise().done(function(){
+				var string = "<li class='disabled title'>Spots of Interest</li>";
+				for(var i = 0; i < result.length; i++){
+					if(result[i].year == time){
+						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - "+result[i].country+"</a></li>";
+						console.log("Adding marker");
+						markersLayer.addLayer(L.marker([50+i,20+i]));
+					}
+				}
+				$(string).appendTo("#main-list");
+				sidebar = $('#sidebar').sidebar();
+			});
+		
+			sidebar.close();
+			markersLayer.addTo(map);
+		//FOR INFO
+			$('#main-info').children().each(function(){
+				//$(this).hide('slow', function(){this.remove();})
+				this.remove();
+				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
+			}).promise().done(function(){
+				
+				var string = "";
+				for(var i = 0; i < result.length; i++){
+					if(result[i].year == time){
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"<span class='sidebar-close'><i class='fa fa-caret-left'></i></span></h1><p>"+result[i].desc+"</p></div>";
+					}
+					
+				}
+				$(string).appendTo("#main-info");		
+			
+			});
+		});
+	}
+
+	else if(map.getZoom() <= 5){
+		$.get('/zoom/events', function(result){
+			$('#main-list').children().each(function(){
+				this.remove();
+			}).promise().done(function(){
+				var string = "<li class='disabled title'>Main Events</li>";
+				for(var i = 0; i < result.length; i++){
+					if(result[i].year == time){
+						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - "+result[i].country+"</a></li>";
+					}
+					
+				}
+			$(string).appendTo("#main-list");
+			sidebar = $('#sidebar').sidebar();
+		});
+			sidebar.close();
+			//FOR INFO
+		$('#main-info').children().each(function(){
+				//$(this).hide('slow', function(){this.remove();})
+				this.remove();
+				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
+			}).promise().done(function(){
+				
+				var string = "";
+				for(var i = 0; i < result.length; i++){
+					if(result[i].year == time){
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"<span class='sidebar-close'><i class='fa fa-caret-left'></i></span></h1><p>"+result[i].desc+"</p></div>";
+					}
+					
+				}
+				$(string).appendTo("#main-info");		
+			
+		});
+		});
+	}
+}
 function checkZoom(){
-	if(map.getZoom() > 5 && currentZoom <= 5){
+	
+	if((map.getZoom() > 5 && currentZoom <= 5)){
+		timeChanged = false;
 		$.get('/zoom/spots', function(result){
 			
 			currentZoom = map.getZoom();
+			//FOR MENU
 			$('#main-list').children().each(function(){
 				$(this).hide('slow', function(){this.remove();})
 				//this.remove();
 				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
 			}).promise().done(function(){
 				$('#main-list').hide();
-				var string = "<li>Spots of Interest</li>";
+				var string = "<li class='disabled title'>Spots of Interest</li>";
 				for(var i = 0; i < result.length; i++){
-					string += "<li><a href='#' role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - "+result[i].country+"</a></li>";
+					if(result[i].year == time){
+						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - "+result[i].country+"</a></li>";
+					}
+					
 				}
 				$(string).appendTo("#main-list");
 				$('#main-list').fadeIn(600);
+				sidebar = $('#sidebar').sidebar();
 			
 			});
+
+			sidebar.close();
+
+
+			//FOR INFO
+			$('#main-info').children().each(function(){
+				//$(this).hide('slow', function(){this.remove();})
+				this.remove();
+				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
+			}).promise().done(function(){
+				
+				var string = "";
+				for(var i = 0; i < result.length; i++){
+					if(result[i].year == time){
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"<span class='sidebar-close'><i class='fa fa-caret-left'></i></span></h1><p>"+result[i].desc+"</p></div>";
+					}
+					
+				}
+				$(string).appendTo("#main-info");
+				
+			
+			});
+			
 		});
 		
 	}
-	if(map.getZoom() <= 5 && currentZoom > 5){
+	else if((map.getZoom() <= 5 && currentZoom > 5)){
+		timeChanged = false;
 		$.get('/zoom/events', function(result){
 			currentZoom = map.getZoom();
 			$('#main-list').children().each(function(){
@@ -146,14 +299,44 @@ function checkZoom(){
 			//this.remove();
 			}).promise().done(function(){
 				$('#main-list').hide();
-				var string = "<li>Main Events</li>";
+				var string = "<li class='disabled title'>Main Events</li>";
 				for(var i = 0; i < result.length; i++){
-					string += "<li><a href='#"+(result[i].name).replace(/\s+/g, '')+"' role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - \n"+result[i].country+"</a></li>";
+					if(result[i].year != time){
+						continue;
+					}
+					string += "<li class><a href='#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"' role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - \n"+result[i].country+"</a></li>";
 				}
 				$(string).appendTo("#main-list");
 				$('#main-list').fadeIn(600);
+				sidebar = $('#sidebar').sidebar();
 			});
+
+			
+			sidebar.close();
+			
+			$('#main-info').children().each(function(){
+				//$(this).hide('slow', function(){this.remove();})
+				this.remove();
+				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
+			}).promise().done(function(){
+				//$('#main-info').hide();
+				var string = "";
+				for(var i = 0; i < result.length; i++){
+					if(result[i].year != time){
+						continue;
+					}
+					string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"<span class='sidebar-close'><i class='fa fa-caret-left'></i></span></h1><p>"+result[i].desc+"</p></div>";
+				}
+				$(string).appendTo("#main-info");
+				
+				//$('#main-info').fadeIn(600);
+			
+			});
+
 		});
+
+
+	//sidebar = $('#sidebar').sidebar();
 	}
 }
 var currentZoom = map.getZoom();
@@ -170,10 +353,11 @@ sliderControl.startSlider();*/
 
 function slider(value){
 	//time = value;
-	console.log(time == '1940');
-	
+		
 	if(time != value){
+		timeChanged = true;
 		time = value;
+		
 		countriesLayer.eachLayer(function(l) {
 			$(l._path).fadeOut(500); // 1000ms animation time
 		});
@@ -190,19 +374,25 @@ function slider(value){
 			
   		}, 500);
 
-		
+		sliderChange();
+
 
 	}
 	
 	//map.removeLayer(countriesLayer);
 	//countriesLayer = L.geoJson(countries, {style: countriesStyle}).addTo(map);
 	//Esri_WorldGrayCanvas.redraw();
+
+function clickMarkers(value){
 	
+	console.log(value);
+
+
 }
 
-var slider = L.control.slider(slider, {id:slider, orientation: 'horizontal', syncSlider: true, collapsed: false, width: 800, min: 1939, max: 1945, value: 1939, getValue: function(value){return 'Year: '+value;}});
-slider.addTo(map);
-map.on('zoom', checkZoom);
-var sidebar = $('#sidebar').sidebar();
+
+}
+
+
 
  </script>

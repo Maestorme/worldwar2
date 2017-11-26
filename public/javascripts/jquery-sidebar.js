@@ -12,7 +12,7 @@ $.fn.sidebar = function(options) {
     var $sidebar = this;
     var $tabs = $sidebar.find('ul.sidebar-tabs, .sidebar-tabs > ul');
     var $container = $sidebar.children('.sidebar-content').first();
-
+    
     options = $.extend({
         position: 'left'
     }, options || {});
@@ -20,9 +20,10 @@ $.fn.sidebar = function(options) {
     $sidebar.addClass('sidebar-' + options.position);
 
     $tabs.children('li').children('a[href^="#"]').on('click', function(e) {
+        console.log(this);
         e.preventDefault();
         var $tab = $(this).closest('li');
-
+        console.log($tab);
         if ($tab.hasClass('active'))
             $sidebar.close();
         else if (!$tab.hasClass('disabled'))
