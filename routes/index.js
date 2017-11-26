@@ -43,6 +43,38 @@ router.get('/', function(req, res, next) {
 //res.render('index', { title: 'Express'});
  
 });
+router.get('/read/:toFind/:id', function(req, res, next){
+	var sending = [];
+	mongo.connect(url, function(err, db){
+			if(err){
+				res.send('Database failed to open');
+			}
+
+			var cursor = db.collection('data').find({type: req.params.toFind});
+			
+			cursor.forEach(function(doc, err){
+				
+  				if(doc.values.name == req.params.id){
+  					
+  					sending.push(doc)
+  				}
+  				
+  				
+  		}, function(){
+  			db.close();
+  			if(sending.length == 0){
+  				console.log("Not found");
+  				res.send("Not found");
+  			}
+  			else{
+  				console.log(sending[0]);
+  				res.send(sending[0]);
+  			}
+  		});
+
+	});
+});
+
 
 router.get('/zoom/:type', function(req, res, next){
 	menu.splice(0, menu.length);
@@ -88,4 +120,41 @@ router.get('/zoom/:type', function(req, res, next){
   	});*/
 
 });
+
+
+router.post('/modify/:id', function(req, res, next){
+	console.log(req.body);
+	
+
+	//FIND THE ITEM WITH THE NAME
+	mongo.connect(url, function(err, db){
+			if(err){
+				res.send('Database failed to open');
+			}
+			var cursor = db.collection('data').update({_id: objectId(req.params.id)}, {$set: {values : req.body}});
+			db.close();
+			res.send("Success");
+	});
+
+});
+
+router.post('/insert/:type', function(req, res, next){
+	console.log(req.body);
+	
+	var item = {type: req.params.type, values: req.body};
+	//FIND THE ITEM WITH THE NAME
+	mongo.connect(url, function(err, db){
+			if(err){
+				res.send('Database failed to open');
+			}
+			db.collection('data').insertOne(item, function(err, result){
+				console.log("Inserted");
+				db.close();
+				res.send("Inserted");
+			});
+			
+	});
+
+});
+
 module.exports = router;

@@ -73,6 +73,7 @@
         color: rgba(0,0,0,1);
         text-align: center;
         font-size: 12pt;
+        line-height: 30px;
       }
       .sidebar-tabs > li > a, .sidebar-tabs > ul > li > a { /*CHANGE THIS TO CHANGE THE SIDEBAR ELEMENTS*/
         display: block;
@@ -105,6 +106,10 @@
   .sidebar.collapsed > .sidebar-content {
     overflow-y: hidden; }
 
+.sidebar-pic {
+  margin-top: 10px;
+  width: 310px;
+}
 .sidebar-pane {
   display: none;
   left: 0;
@@ -135,10 +140,26 @@
     padding-left: 100px/*40px*/;
     padding-right: 50px; }
 
-.sidebar-close {
+.sidebar-edit{
+  margin: 0;
   position: absolute;
-  top: 0;
-  width: 40px;
+  top: 8px;
+  right: 30px;
+  color: white;
+  width: 30px;
+  height: 40px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14pt;
+}
+.sidebar-close {
+
+  margin: 0;
+  font-size: 14pt;
+  color: white;
+  position: absolute;
+  top: 8px;
+  width: 30px;
   height: 40px;
   text-align: center;
   cursor: pointer; }
@@ -210,7 +231,3 @@
   .sidebar-right.collapsed ~ .sidebar-map .leaflet-right {
     right: 50px; } }
 
-textarea {
-  width: 350px;
-  height: 500px;
-}

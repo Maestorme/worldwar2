@@ -6,9 +6,9 @@
 
                 <li class='disabled title'>Main Events</li>
                 {{#each items}}
-                	<li><a href={{this.path}} role='tab'><i class = "fa fa-facebook"></i>&nbsp;&nbsp;{{this.name}} - {{this.country}}</a></li>
+                	<li><a href={{this.path}} role='tab'><i class = "fa fa-facebook"></i>&nbsp;&nbsp;{{this.name}}</a></li>
                 {{/each}}
-             
+             	<li><a href = '#new-content' role='tab'><i class = 'fa fa-plus-circle'></i></a></li>
 
             </ul>
 
@@ -22,13 +22,25 @@
         <div class="sidebar-content" id='main-info'>
         	{{#each items}}
             	<div class="sidebar-pane" id={{this.hashid}}>
-                	<h1 class="sidebar-header">
-                    	{{this.name}}
-                    	<span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
-                	</h1>
-                	<p>{{this.desc}}</p>
+                	<h1 class="sidebar-header">{{this.name}}</h1>
+                	<span class="sidebar-edit"><i class="fa fa-edit"></i></span>
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                    <img src={{this.imgurl}} class='sidebar-pic'>
+                	<p id = "content-description">{{this.desc}}</p>
+                	<p style="display: none">50</p>
+                	<p style="display: none">20</p>
             	</div>
             {{/each}}
+            	<div class="sidebar-pane" id='new-content'>
+                	<h1 class="sidebar-header">Title</h1>
+                	<span class="sidebar-edit"><i class="fa fa-edit"></i></span>
+                    <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                    <img src = "images/blank.jpg" class="sidebar-pic">
+                	<p id = "content-description">Enter your description here and pick a spot on the map to place marker</p>
+                	<p style="display: none">-1</p>
+                	<p style="display: none">-1</p>
+            	</div>
+
         </div>
  </div>
  <script>
@@ -60,7 +72,7 @@ var sidebar = $('#sidebar').sidebar();
 var markersLayer = L.featureGroup();
 
 markersLayer.on("click", function(e){
-	sidebar.open("WarshawGhetto");
+	console.log("Opening a sidebar!")
 	
 });
 /*var Esri_NatGeoWorldMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
@@ -160,7 +172,7 @@ function countriesStyle(feature){
 	
 }
 
-function sliderChange(){
+/*function sliderChange(){
 	
 	if(map.getZoom() > 5){
 		markersLayer.clearLayers();
@@ -192,7 +204,7 @@ function sliderChange(){
 				var string = "";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"<span class='sidebar-close'><i class='fa fa-caret-left'></i></span></h1><p>"+result[i].desc+"</p></div>";
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><p>"+result[i].desc+"</p></div>";
 					}
 					
 				}
@@ -228,7 +240,7 @@ function sliderChange(){
 				var string = "";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"<span class='sidebar-close'><i class='fa fa-caret-left'></i></span></h1><p>"+result[i].desc+"</p></div>";
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><p>"+result[i].desc+"</p></div>";
 					}
 					
 				}
@@ -236,6 +248,118 @@ function sliderChange(){
 			
 		});
 		});
+	}
+}*/
+
+
+function sliderChange(){
+	
+	if((map.getZoom() > 5)){
+		timeChanged = false;
+		$.get('/zoom/spots', function(result){
+			
+			currentZoom = map.getZoom();
+			//FOR MENU
+			$('#main-list').children().each(function(){
+				$(this).hide(0, function(){this.remove();})
+				//$(this).remove();
+				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
+			}).promise().done(function(){
+				//$('#main-list').hide();
+				var string = "<li class='disabled title'>Spots of Interest</li>";
+				for(var i = 0; i < result.length; i++){
+					if(result[i].year == time){
+						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
+					}
+					
+				}
+				string += "<li><a href = '#new-content' role='tab'><i class = 'fa fa-plus-circle'></i></a></li>";
+				$(string).appendTo("#main-list");
+				//$('#main-list').fadeIn(600);
+				sidebar = null;
+				sidebar = $('#sidebar').sidebar();
+			
+			});
+
+			sidebar.close();
+
+
+			//FOR INFO
+			$('#main-info').children().each(function(){
+				//$(this).hide('10', function(){this.remove();})
+				this.remove();
+				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
+			}).promise().done(function(){
+				
+				var string = "";
+				for(var i = 0; i < result.length; i++){
+					if(result[i].year == time){
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p></div>";
+					}
+					
+				}
+				string += "<div class='sidebar-pane' id='new-content'><h1 class='sidebar-header'>Title</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = 'images/blank.jpg' class ='sidebar-pic'><p id = 'content-description'>Enter your description here and pick a spot on the map to place marker</p></div>"
+				$(string).appendTo("#main-info");
+				
+			
+			});
+			
+		});
+		
+	}
+	else if((map.getZoom() <= 5)){
+		timeChanged = false;
+		$.get('/zoom/events', function(result){
+			currentZoom = map.getZoom();
+			$('#main-list').children().each(function(){
+				$(this).hide(0, function(){this.remove();})
+			    //$(this).remove();
+			}).promise().done(function(){
+				//$('#main-list').hide();
+				var string = "<li class='disabled title'>Main Events</li>";
+				for(var i = 0; i < result.length; i++){
+					if(result[i].year != time){
+						continue;
+					}
+					string += "<li class><a href='#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"' role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
+				}
+				string += "<li><a href = '#new-content' role='tab'><i class = 'fa fa-plus-circle'></i></a></li>";
+				$(string).appendTo("#main-list");
+				//$('#main-list').fadeIn(600);
+				sidebar = null;
+
+				sidebar = $('#sidebar').sidebar();
+			});
+
+			
+			sidebar.close();
+			
+			$('#main-info').children().each(function(){
+				//$(this).hide('slow', function(){this.remove();})
+				console.log(this); 
+				this.remove();
+				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
+			}).promise().done(function(){
+				//$('#main-info').hide();
+				var string = "";
+				for(var i = 0; i < result.length; i++){
+					if(result[i].year == time){
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p></div>";
+					}
+					
+				}
+				string += "<div class='sidebar-pane' id='new-content'><h1 class='sidebar-header'>Title</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = 'images/blank.jpg' class ='sidebar-pic'><p id = 'content-description'>Enter your description here and pick a spot on the map to place marker</p></div>"
+
+				$(string).appendTo("#main-info");
+				
+				//$('#main-info').fadeIn(600);
+			
+			});
+
+		});
+
+
+	//sidebar = $('#sidebar').sidebar();
 	}
 }
 function checkZoom(){
@@ -255,10 +379,11 @@ function checkZoom(){
 				var string = "<li class='disabled title'>Spots of Interest</li>";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - "+result[i].country+"</a></li>";
+						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
 					}
 					
 				}
+				string += "<li><a href = '#new-content' role='tab'><i class = 'fa fa-plus-circle'></i></a></li>";
 				$(string).appendTo("#main-list");
 				$('#main-list').fadeIn(600);
 				sidebar = $('#sidebar').sidebar();
@@ -278,10 +403,11 @@ function checkZoom(){
 				var string = "";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"<span class='sidebar-close'><i class='fa fa-caret-left'></i></span></h1><p>"+result[i].desc+"</p></div>";
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p></div>";
 					}
 					
 				}
+				string += "<div class='sidebar-pane' id='new-content'><h1 class='sidebar-header'>Title</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = 'images/blank.jpg' class ='sidebar-pic'><p id = 'content-description'>Enter your description here and pick a spot on the map to place marker</p></div>"
 				$(string).appendTo("#main-info");
 				
 			
@@ -304,8 +430,9 @@ function checkZoom(){
 					if(result[i].year != time){
 						continue;
 					}
-					string += "<li class><a href='#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"' role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - \n"+result[i].country+"</a></li>";
+					string += "<li class><a href='#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"' role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
 				}
+				string += "<li><a href = '#new-content' role='tab'><i class = 'fa fa-plus-circle'></i></a></li>";
 				$(string).appendTo("#main-list");
 				$('#main-list').fadeIn(600);
 				sidebar = $('#sidebar').sidebar();
@@ -325,8 +452,9 @@ function checkZoom(){
 					if(result[i].year != time){
 						continue;
 					}
-					string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"<span class='sidebar-close'><i class='fa fa-caret-left'></i></span></h1><p>"+result[i].desc+"</p></div>";
+					string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p></div>";
 				}
+				string += "<div class='sidebar-pane' id='new-content'><h1 class='sidebar-header'>Title</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = 'images/blank.jpg' class ='sidebar-pic'><p id = 'content-description'>Enter your description here and pick a spot on the map to place marker</p></div>"
 				$(string).appendTo("#main-info");
 				
 				//$('#main-info').fadeIn(600);
