@@ -3,12 +3,15 @@ var router = express.Router();
 var mongo = require('mongodb').MongoClient;
 var objectId = require('mongodb').ObjectID;
 
-var url = 'mongodb://heroku_s5cxwch8:gqdan5b2nmod3dfcd3dsjjtcuv@ds121696.mlab.com:21696/heroku_s5cxwch8';
-
+//var url = 'mongodb://heroku_s5cxwch8:gqdan5b2nmod3dfcd3dsjjtcuv@ds121696.mlab.com:21696/heroku_s5cxwch8';
+var url = 'mongodb://localhost:27017/wwii';
 var menu = [];
 
+router.get('/', function(req, res, next){
+	res.render('home');
+});
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/app', function(req, res, next) {
   menu.splice(0, menu.length);
 
   mongo.connect(url, function(err, db){
@@ -36,7 +39,7 @@ router.get('/', function(req, res, next) {
   					menu1939.push(menu[i]);
   				}
   			}
-  			res.render('index', { title: 'Express' , items: menu1939});
+  			res.render('index', { title: 'The Map-zi Conquest' , items: menu1939});
   		});
 
   });
