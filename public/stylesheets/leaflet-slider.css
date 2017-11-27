@@ -32,6 +32,7 @@ a.leaflet-control-slider-toggle {
     height: 36px;
     margin: 0px 0px 0px 0px;
     border-right: 1px solid #CCC;
+
     width: 100px; /*35px*/
     float :left;
     clear:none;

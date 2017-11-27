@@ -142,7 +142,7 @@ router.post('/insert/:type', function(req, res, next){
 	console.log(req.body);
 	
 	var item = {type: req.params.type, values: req.body};
-	//FIND THE ITEM WITH THE NAME
+	
 	mongo.connect(url, function(err, db){
 			if(err){
 				res.send('Database failed to open');
@@ -155,6 +155,25 @@ router.post('/insert/:type', function(req, res, next){
 			
 	});
 
+});
+
+router.get('/marker/:lat/:lng', function(req, res, next){
+	var marker_details = "";
+	mongo.connect(url, function(err, db){
+			if(err){
+				res.send('Database failed to open');
+			}
+			var cursor = db.collection('data').find({"values.lat" : req.params.lat, "values.lng": req.params.lng});
+
+			cursor.forEach(function(doc, err){
+				console.log(doc.values.hashid);
+				marker_details = doc.values.hashid;
+			}, function(){
+				db.close();
+				res.send(marker_details);
+			});
+			
+	});
 });
 
 module.exports = router;

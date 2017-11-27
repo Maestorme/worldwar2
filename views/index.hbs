@@ -4,16 +4,19 @@
         <div class="sidebar-tabs">
             <ul role="tablist" id = 'main-list'>
 
-                <li class='disabled title'>Main Events</li>
+                <li class='disabled title'>MAIN EVENTS</li>
                 {{#each items}}
-                	<li><a href={{this.path}} role='tab'><i class = "fa fa-facebook"></i>&nbsp;&nbsp;{{this.name}}</a></li>
+                	<li><a href={{this.path}} role='tab'><i class = "fa fa-info-circle"></i>&nbsp;&nbsp;{{this.name}}</a></li>
                 {{/each}}
              	<li><a href = '#new-content' role='tab'><i class = 'fa fa-plus-circle'></i></a></li>
 
             </ul>
 
             <ul role="tablist">
-                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+                <li class = 'disabled title'>MAP LEGEND</li>
+                <li style = "color: red; text-align: center" class = 'disabled'>Axis Powers</li>
+                <li style = "color: blue; text-align: center" class = 'disabled'>Allies</li>
+                <li style = "color: green; text-align: center" class = 'disabled'>U.S.S.R</li>
             </ul>
         </div>
 
@@ -27,8 +30,8 @@
                     <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
                     <img src={{this.imgurl}} class='sidebar-pic'>
                 	<p id = "content-description">{{this.desc}}</p>
-                	<p style="display: none">50</p>
-                	<p style="display: none">20</p>
+                	<p style="display: none">{{this.lat}}</p>
+                	<p style="display: none">{{this.lng}}</p>
             	</div>
             {{/each}}
             	<div class="sidebar-pane" id='new-content'>
@@ -37,8 +40,8 @@
                     <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
                     <img src = "images/blank.jpg" class="sidebar-pic">
                 	<p id = "content-description">Enter your description here and pick a spot on the map to place marker</p>
-                	<p style="display: none">-1</p>
-                	<p style="display: none">-1</p>
+                	<p style="display: none">0</p>
+                	<p style="display: none">0</p>
             	</div>
 
         </div>
@@ -62,7 +65,7 @@
   }).addTo(map);
   //map.worldCopyJump = true;
   L.control.zoom({position: 'bottomright'}).addTo(map);
-  map.bounds = [], map.setMaxBounds([[-85.05115, -180],[85,180]]);
+  map.bounds = [], map.setMaxBounds([[-85.05115, -280],[85,180]]);
 var slider = L.control.slider(slider, {id:slider, orientation: 'horizontal', syncSlider: true, collapsed: false, width: 800, min: 1939, max: 1945, value: 1939, getValue: function(value){return 'Year: '+value;}});
 slider.addTo(map);
 map.on('zoom', checkZoom);
@@ -72,7 +75,17 @@ var sidebar = $('#sidebar').sidebar();
 var markersLayer = L.featureGroup();
 
 markersLayer.on("click", function(e){
-	console.log("Opening a sidebar!")
+	if($('.sidebar-content').children().hasClass('active')){
+		$('.sidebar-content').children().removeClass('active')
+		sidebar.close();
+	}
+	else{
+		$.get('/marker/'+e.latlng.lat+'/'+e.latlng.lng, function(result){
+
+		sidebar.open(result);
+		});
+	}
+	
 	
 });
 /*var Esri_NatGeoWorldMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
@@ -183,7 +196,7 @@ function countriesStyle(feature){
 				var string = "<li class='disabled title'>Spots of Interest</li>";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - "+result[i].country+"</a></li>";
+						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-info-circle'></i>&nbsp;&nbsp;"+result[i].name+" - "+result[i].country+"</a></li>";
 						console.log("Adding marker");
 						markersLayer.addLayer(L.marker([50+i,20+i]));
 					}
@@ -222,7 +235,7 @@ function countriesStyle(feature){
 				var string = "<li class='disabled title'>Main Events</li>";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+" - "+result[i].country+"</a></li>";
+						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-info-circle'></i>&nbsp;&nbsp;"+result[i].name+" - "+result[i].country+"</a></li>";
 					}
 					
 				}
@@ -257,7 +270,7 @@ function sliderChange(){
 	if((map.getZoom() > 5)){
 		timeChanged = false;
 		$.get('/zoom/spots', function(result){
-			
+			markersLayer.clearLayers();
 			currentZoom = map.getZoom();
 			//FOR MENU
 			$('#main-list').children().each(function(){
@@ -266,10 +279,12 @@ function sliderChange(){
 				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
 			}).promise().done(function(){
 				//$('#main-list').hide();
-				var string = "<li class='disabled title'>Spots of Interest</li>";
+				var string = "<li class='disabled title'>SPOTS OF INTEREST</li>";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
+						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-info-circle'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
+						var circleicon = L.icon({iconUrl: result[i].iconurl, iconSize: [40,40], shadowUrl: '/images/icons/shadow.png', shadowSize: [40,30], shadowAnchor: [0,10]});
+						markersLayer.addLayer(L.marker([result[i].lat,result[i].lng], {icon: circleicon}));
 					}
 					
 				}
@@ -282,7 +297,7 @@ function sliderChange(){
 			});
 
 			sidebar.close();
-
+			markersLayer.addTo(map);
 
 			//FOR INFO
 			$('#main-info').children().each(function(){
@@ -294,11 +309,11 @@ function sliderChange(){
 				var string = "";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p></div>";
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p><p style='display: none'>"+result[i].lat+"</p><p style='display: none'>"+result[i].lng+"</p></div>";
 					}
 					
 				}
-				string += "<div class='sidebar-pane' id='new-content'><h1 class='sidebar-header'>Title</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = 'images/blank.jpg' class ='sidebar-pic'><p id = 'content-description'>Enter your description here and pick a spot on the map to place marker</p></div>"
+				string += "<div class='sidebar-pane' id='new-content'><h1 class='sidebar-header'>Title</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = 'images/blank.jpg' class ='sidebar-pic'><p id = 'content-description'>Enter your description here and pick a spot on the map to place marker</p><p style='display: none'>0</p><p style='display: none'>0</p></div>"
 				$(string).appendTo("#main-info");
 				
 			
@@ -310,18 +325,22 @@ function sliderChange(){
 	else if((map.getZoom() <= 5)){
 		timeChanged = false;
 		$.get('/zoom/events', function(result){
+			markersLayer.clearLayers();
 			currentZoom = map.getZoom();
 			$('#main-list').children().each(function(){
 				$(this).hide(0, function(){this.remove();})
 			    //$(this).remove();
 			}).promise().done(function(){
 				//$('#main-list').hide();
-				var string = "<li class='disabled title'>Main Events</li>";
+				var string = "<li class='disabled title'>MAIN EVENTS</li>";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year != time){
 						continue;
 					}
-					string += "<li class><a href='#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"' role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
+					string += "<li class><a href='#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"' role='tab'><i class='fa fa-info-circle'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
+					//console.log(result[i].lat, result[i].lng);
+					var circleicon = L.icon({iconUrl: result[i].iconurl, iconSize: [40,40], shadowUrl: '/images/icons/shadow.png', shadowSize: [40,30], shadowAnchor: [0,10]});
+					markersLayer.addLayer(L.marker([result[i].lat,result[i].lng], {icon: circleicon}));
 				}
 				string += "<li><a href = '#new-content' role='tab'><i class = 'fa fa-plus-circle'></i></a></li>";
 				$(string).appendTo("#main-list");
@@ -333,10 +352,12 @@ function sliderChange(){
 
 			
 			sidebar.close();
-			
+			markersLayer.addTo(map);
+			//console.log(markersLayer._layers)
+
 			$('#main-info').children().each(function(){
 				//$(this).hide('slow', function(){this.remove();})
-				console.log(this); 
+				//console.log(this); 
 				this.remove();
 				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
 			}).promise().done(function(){
@@ -344,7 +365,7 @@ function sliderChange(){
 				var string = "";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p></div>";
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p><p style='display: none'>"+result[i].lat+"</p><p style='display: none'>"+result[i].lng+"</p></div>";
 					}
 					
 				}
@@ -367,7 +388,7 @@ function checkZoom(){
 	if((map.getZoom() > 5 && currentZoom <= 5)){
 		timeChanged = false;
 		$.get('/zoom/spots', function(result){
-			
+			markersLayer.clearLayers();
 			currentZoom = map.getZoom();
 			//FOR MENU
 			$('#main-list').children().each(function(){
@@ -376,10 +397,12 @@ function checkZoom(){
 				//$(this).fadeOut(200).promise().done(function(){$(this).remove;})
 			}).promise().done(function(){
 				$('#main-list').hide();
-				var string = "<li class='disabled title'>Spots of Interest</li>";
+				var string = "<li class='disabled title'>SPOTS OF INTEREST</li>";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
+						string += "<li class><a href=#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+" role='tab'><i class='fa fa-info-circle'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
+						var circleicon = L.icon({iconUrl: result[i].iconurl, iconSize: [40,40], shadowUrl: '/images/icons/shadow.png', shadowSize: [40,30], shadowAnchor: [0,10]});
+						markersLayer.addLayer(L.marker([result[i].lat,result[i].lng], {icon: circleicon}));
 					}
 					
 				}
@@ -391,6 +414,7 @@ function checkZoom(){
 			});
 
 			sidebar.close();
+			markersLayer.addTo(map);
 
 
 			//FOR INFO
@@ -403,11 +427,11 @@ function checkZoom(){
 				var string = "";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year == time){
-						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p></div>";
+						string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p><p style='display: none'>"+result[i].lat+"</p><p style='display: none'>"+result[i].lng+"</p></div>";
 					}
 					
 				}
-				string += "<div class='sidebar-pane' id='new-content'><h1 class='sidebar-header'>Title</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = 'images/blank.jpg' class ='sidebar-pic'><p id = 'content-description'>Enter your description here and pick a spot on the map to place marker</p></div>"
+				string += "<div class='sidebar-pane' id='new-content'><h1 class='sidebar-header'>Title</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = 'images/blank.jpg' class ='sidebar-pic'><p id = 'content-description'>Enter your description here and pick a spot on the map to place marker</p><p style='display: none'>"+'0'+"</p><p style='display: none'>"+'0'+"</p></div>"
 				$(string).appendTo("#main-info");
 				
 			
@@ -419,18 +443,22 @@ function checkZoom(){
 	else if((map.getZoom() <= 5 && currentZoom > 5)){
 		timeChanged = false;
 		$.get('/zoom/events', function(result){
+			//console.log(map.getCenter());
+			markersLayer.clearLayers();
 			currentZoom = map.getZoom();
 			$('#main-list').children().each(function(){
 				$(this).hide('slow', function(){this.remove();})
 			//this.remove();
 			}).promise().done(function(){
 				$('#main-list').hide();
-				var string = "<li class='disabled title'>Main Events</li>";
+				var string = "<li class='disabled title'>MAIN EVENTS</li>";
 				for(var i = 0; i < result.length; i++){
 					if(result[i].year != time){
 						continue;
 					}
-					string += "<li class><a href='#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"' role='tab'><i class='fa fa-facebook'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
+					string += "<li class><a href='#"+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"' role='tab'><i class='fa fa-info-circle'></i>&nbsp;&nbsp;"+result[i].name+"</a></li>";
+					var circleicon = L.icon({iconUrl: result[i].iconurl, iconSize: [40,40], shadowUrl: '/images/icons/shadow.png', shadowSize: [40,30], shadowAnchor: [0,10]});
+					markersLayer.addLayer(L.marker([result[i].lat,result[i].lng], {icon: circleicon}));
 				}
 				string += "<li><a href = '#new-content' role='tab'><i class = 'fa fa-plus-circle'></i></a></li>";
 				$(string).appendTo("#main-list");
@@ -440,6 +468,7 @@ function checkZoom(){
 
 			
 			sidebar.close();
+			markersLayer.addTo(map);
 			
 			$('#main-info').children().each(function(){
 				//$(this).hide('slow', function(){this.remove();})
@@ -452,9 +481,9 @@ function checkZoom(){
 					if(result[i].year != time){
 						continue;
 					}
-					string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p></div>";
+					string += "<div class='sidebar-pane' id="+result[i].name.replace(/\s+/g, '').replace(/\'+/g, '')+"><h1 class = 'sidebar-header'>"+result[i].name+"</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = '"+result[i].imgurl+"' class ='sidebar-pic'><p id = 'content-description'>"+result[i].desc+"</p><p style='display: none'>"+result[i].lat+"</p><p style='display: none'>"+result[i].lng+"</p></div>";
 				}
-				string += "<div class='sidebar-pane' id='new-content'><h1 class='sidebar-header'>Title</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = 'images/blank.jpg' class ='sidebar-pic'><p id = 'content-description'>Enter your description here and pick a spot on the map to place marker</p></div>"
+				string += "<div class='sidebar-pane' id='new-content'><h1 class='sidebar-header'>Title</h1><span class='sidebar-edit'><i class='fa fa-edit'></i></span><span class='sidebar-close'><i class='fa fa-caret-left'></i></span><img src = 'images/blank.jpg' class ='sidebar-pic'><p id = 'content-description'>Enter your description here and pick a spot on the map to place marker</p><p style='display: none'>"+'0'+"</p><p style='display: none'>"+'0'+"</p></div>"
 				$(string).appendTo("#main-info");
 				
 				//$('#main-info').fadeIn(600);
@@ -511,15 +540,12 @@ function slider(value){
 	//countriesLayer = L.geoJson(countries, {style: countriesStyle}).addTo(map);
 	//Esri_WorldGrayCanvas.redraw();
 
-function clickMarkers(value){
-	
-	console.log(value);
-
 
 }
 
+sliderChange();
 
-}
+
 
 
 

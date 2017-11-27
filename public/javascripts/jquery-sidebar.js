@@ -8,6 +8,7 @@
  * @param {string} [options.position=left] - Position of the sidebar: 'left' or 'right'
  * @returns {jQuery}
  */
+var marker = L.marker();
 $.fn.sidebar = function(options) {
     
     var $sidebar = this;
@@ -30,8 +31,25 @@ $.fn.sidebar = function(options) {
         
         if ($tab.hasClass('active'))
             $sidebar.close();
-        else if (!$tab.hasClass('disabled'))
+        else if (!$tab.hasClass('disabled')){
             $sidebar.open(this.hash.slice(1), $tab);
+            //console.log($tab.index());
+            var curr_content = $('.sidebar-content').children()[$tab.index()-1];
+            
+            if($(curr_content).attr('id') == 'new-content'){
+                var circleicon = L.icon({iconUrl: '/images/icons/blank.png', iconSize: [40,40], shadowUrl: '/images/icons/shadow.png', shadowSize: [40,30], shadowAnchor: [0,10]});
+                marker = L.marker(map.getCenter(), {icon: circleicon, draggable: true});
+                //console.log(marker._latlng);
+                markersLayer.addLayer(marker);
+            }
+            else{
+                var curr_lat = $($(curr_content).children()[5]).html();
+                var curr_lng = $($(curr_content).children()[6]).html();
+
+                map.setView([curr_lat, curr_lng], map.getZoom());
+            }
+            
+        }
     });
     
     //OLD WAS $sidebar.find('.sidebar-close').on('click', fn)
@@ -51,6 +69,7 @@ $.fn.sidebar = function(options) {
 
 
         $sidebar.close();
+        markersLayer.removeLayer(marker);
     })
   
     
@@ -59,7 +78,7 @@ $.fn.sidebar = function(options) {
     //$('.sidebar-edit').on('click', function(){
     $('.sidebar')/*.off('click')*/.on('click', '.sidebar-edit', function(){
         if($('.sidebar-edit > i').hasClass('fa-edit')){ //TO EDIT
-            console.log("Editing now");
+            //console.log("Editing now");
             $('.sidebar-edit > i').removeClass('fa-edit');
             $('.sidebar-edit > i').addClass('fa-check');
 
@@ -139,9 +158,10 @@ $.fn.sidebar = function(options) {
             var title = $item2.html();//$item.prev().prev().prev().html();
 
             //REMEMBER TO GET LAT LNG FROM MARKERS
-            
+            var lat = $item.next().next().html();
+            var lng = $item.next().next().next().html();
 
-            var doc = {desc: $item.html(), name: title, iconurl: iconurl, imgurl: imgurl};
+            var doc = {desc: $item.html(), name: title, iconurl: iconurl, imgurl: imgurl, lat: lat, lng: lng};
             doc.path = '#'+(doc.name).replace(/\s+/g, '').replace(/\'+/g, '');
             doc.year = time;
             doc.hashid = doc.name.replace(/\s+/g, '').replace(/\'+/g, ''); 
@@ -155,7 +175,13 @@ $.fn.sidebar = function(options) {
                     alert('Please make changes before adding a new point or cancel by clicking the button next to the submit button');
                 }
                 else{
-                    console.log(doc);
+                    doc.lat = marker._latlng.lat;
+                    doc.lng = marker._latlng.lng;
+                    if(doc.iconurl == ""){
+                        doc.iconurl = '/images/icons/blank.png';
+                    }
+
+                    //console.log(doc);
                     $.post('/insert/'+type,  doc, function(result){
                         console.log(result);
                         sliderChange();
@@ -217,9 +243,10 @@ $.fn.sidebar = function(options) {
             
         }
 
+       
         var lat = $('#content-description').next().html();
         var lng = $('#content-description').next().next().html();
-        
+
     };
 
     /**
