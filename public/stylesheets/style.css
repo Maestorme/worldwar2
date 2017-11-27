@@ -25,7 +25,11 @@ a {
 	text-align: center;
 	
 	position: absolute;
-	background-image: url('/images/bg.jpg');
+	background: url('/images/bg.jpg') no-repeat fixed;
+	-webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 	padding: 0;
 	margin: 0;
 	border: 0;
