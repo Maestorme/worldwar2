@@ -3,8 +3,8 @@ var router = express.Router();
 var mongo = require('mongodb').MongoClient;
 var objectId = require('mongodb').ObjectID;
 
-//var url = 'mongodb://heroku_s5cxwch8:gqdan5b2nmod3dfcd3dsjjtcuv@ds121696.mlab.com:21696/heroku_s5cxwch8';
-var url = 'mongodb://localhost:27017/wwii';
+var url = 'mongodb://heroku_s5cxwch8:gqdan5b2nmod3dfcd3dsjjtcuv@ds121696.mlab.com:21696/heroku_s5cxwch8';
+//var url = 'mongodb://localhost:27017/wwii';
 var menu = [];
 
 router.get('/', function(req, res, next){
